@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notícias do Dia</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        header {
+            background-color: #ff6347;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px #000000;
+        }
+        
+        nav {
+            background-color: #4682b4;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        nav li {
+            display: inline;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: #1e90ff;
+            transform: scale(1.1);
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        
+        .noticia {
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            width: 30%;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: none;
+        }
+        
+        .noticia.visible {
+            display: block;
+        }
+        
+        .noticia:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .noticia img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .noticia h2 {
+            color: #ff6347;
+            margin-top: 0;
+        }
+        
+        .noticia p {
+            text-align: justify;
+        }
+        
+        .leia-mais {
+            display: block;
+            text-align: right;
+            color: #4682b4;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .leia-mais:hover {
+            color: #1e90ff;
+            text-decoration: underline;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+       
+        .dark-mode {
+            background-color: #222;
+            color: #eee;
+        }
+        
+        .dark-mode .noticia {
+            background-color: #444;
+            border-color: #666;
+            color: #eee;
+        }
+        
+        .dark-mode h2 {
+            color: #ff8c66;
+        }
+        
+        .dark-mode nav {
+            background-color: #2a4d6e;
+        }
+        
+        .dark-mode footer {
+            background-color: #111;
+        }
+        
+        
+        #darkModeBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        #darkModeBtn:hover {
+            background-color: #555;
+            transform: scale(1.1);
+        }
+        
+        #backToTop {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            padding: 12px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 100;
+            display: none;
+        }
+        
+        #backToTop:hover {
+            background-color: #ff4500;
+            transform: scale(1.1);
+        }
+        
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .dark-mode .modal-content {
+            background-color: #444;
+            color: #eee;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #ff6347;
+        }
+        
+        .close-btn:hover {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Notícias do Dia</h1>
+        <p>Fique por dentro das últimas novidades do cotidiano!</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#" class="nav-link active" data-category="all">Todas</a></li>
+            <li><a href="#" class="nav-link" data-category="transporte">Transporte</a></li>
+            <li><a href="#" class="nav-link" data-category="comida">Comida</a></li>
+            <li><a href="#" class="nav-link" data-category="rotina">Rotina</a></li>
+            <li><a href="#" class="nav-link" data-category="escola">Escola</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="noticia visible" data-category="escola">
+            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Alunos na escola">
+            <h2>Alunos criam site de notícias para trabalho escolar</h2>
+            <p>Um grupo de alunos do ensino médio desenvolveu um site de notícias como parte de um projeto escolar. O trabalho foi elogiado pelos professores por sua criatividade e originalidade. "Ficamos impressionados com a qualidade do trabalho", disse a professora de informática.</p>
+            <a href="#" class="leia-mais" data-noticia="1">Leia mais...</a>
+        </div>
+        
+        <div class="noticia visible" data-category="transporte">
+            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Ônibus urbano">
+            <h2>Prefeitura anuncia novos ônibus para linha escolar</h2>
+            <p>A prefeitura anunciou a chegada de 10 novos ônibus para atender as linhas escolares da cidade. Os veículos possuem ar-condicionado e espaços específicos para mochilas. "Queremos mais conforto e segurança para nossos estudantes", disse o prefeito.</p>
+            <a href="#" class="leia-mais" data-noticia="2">Leia mais...</a>
+        </div>
+        
+        <div class="noticia visible" data-category="escola">
+            <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Feira de ciências">
+            <h2>Escola promove feira de ciências com projetos inovadores</h2>
+            <p>A tradicional feira de ciências da Escola Estadual Carlos Drummond contou com a participação de mais de 200 alunos, que apresentaram projetos criativos e sustentáveis. Destaque para um sistema de irrigação automático feito com materiais reciclados.</p>
+            <a href="#" class="leia-mais" data-noticia="3">Leia mais...</a>
+        </div>
+        
+        <div class="noticia visible" data-category="comida">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Mesa com comida">
+            <h2>Cantina escolar lança cardápio mais saudável</h2>
+            <p>A cantina da escola renovou seu cardápio com opções mais nutritivas e saborosas. Agora oferece saladas, sanduíches integrais e frutas da estação. "Queremos ajudar os alunos a terem hábitos alimentares melhores", explicou a nutricionista responsável.</p>
+            <a href="#" class="leia-mais" data-noticia="4">Leia mais...</a>
+        </div>
+        
+        <div class="noticia visible" data-category="rotina">
+            <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Pessoa estudando">
+            <h2>Como organizar melhor a rotina de estudos</h2>
+            <p>Especialistas dão dicas para os estudantes organizarem melhor seu tempo entre escola, tarefas domésticas e lazer. "Ter horários definidos e um local adequado para estudos faz toda diferença", recomenda uma psicóloga escolar.</p>
+            <a href="#" class="leia-mais" data-noticia="5">Leia mais...</a>
+        </div>
+        
+        <div class="noticia visible" data-category="transporte">
+            <img src="https://images.unsplash.com/photo-1509822929063-6b6cfc9b42f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&h=200&q=80" alt="Bicicletário">
+            <h2>Escola instala novo bicicletário com 50 vagas</h2>
+            <p>Para incentivar o transporte sustentável, a escola construiu um novo bicicletário coberto com capacidade para 50 bikes. "Muitos alunos já vinham de bicicleta e agora terão um local seguro para guardar", comemorou o diretor.</p>
+            <a href="#" class="leia-mais" data-noticia="6">Leia mais...</a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 Notícias do Dia - Trabalho Escolar de Informática</p>
+        <p>Desenvolvido por [Seu Nome]</p>
+    </footer>
+    
+    <button id="darkModeBtn" title="Modo Escuro">🌙</button>
+    <button id="backToTop" title="Voltar ao Topo">↑</button>
+    
+    <div id="noticiaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modalTitulo"></h2>
+            <img id="modalImagem" src="" alt="" style="width:100%; max-height:300px; object-fit:cover; margin-bottom:15px;">
+            <div id="modalTexto"></div>
+        </div>
+    </div>
+    
+    <script>
+        const darkModeBtn = document.getElementById('darkModeBtn');
+        darkModeBtn.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                darkModeBtn.textContent = '☀️';
+                darkModeBtn.title = 'Modo Claro';
+                darkModeBtn.style.backgroundColor = '#555';
+            } else {
+                darkModeBtn.textContent = '🌙';
+                darkModeBtn.title = 'Modo Escuro';
+                darkModeBtn.style.backgroundColor = '#333';
+            }
+        });
+        
+       
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'block';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const noticias = document.querySelectorAll('.noticia');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+               
+                navLinks.forEach(l => l.classList.remove('active'));
+            
+                this.classList.add('active');
+                
+                const categoria = this.getAttribute('data-category');
+                
+                noticias.forEach(noticia => {
+                    if (categoria === 'all' || noticia.getAttribute('data-category') === categoria) {
+                        noticia.classList.add('visible');
+                    } else {
+                        noticia.classList.remove('visible');
+                    }
+                });
+            });
+        });
+        
+       
+        const modal = document.getElementById('noticiaModal');
+        const modalTitulo = document.getElementById('modalTitulo');
+        const modalImagem = document.getElementById('modalImagem');
+        const modalTexto = document.getElementById('modalTexto');
+        const closeBtn = document.querySelector('.close-btn');
+        const leiaMaisBtns = document.querySelectorAll('.leia-mais');
+        
+       
+        const noticiasCompletas = {
+            1: {
+                titulo: "Alunos criam site de notícias para trabalho escolar",
+                imagem: "https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>Um grupo de alunos do ensino médio desenvolveu um site de notícias como parte de um projeto escolar de informática. O trabalho, que recebeu nota máxima, foi elogiado pelos professores por sua criatividade e originalidade.</p><p>'Ficamos impressionados com a qualidade do trabalho', disse a professora de informática, Maria Silva. 'Os alunos demonstraram domínio das técnicas de desenvolvimento web e criatividade no design.'</p><p>O site, que levou três semanas para ser desenvolvido, inclui funcionalidades como filtro por categorias e modo escuro. 'Aprendemos muito com esse projeto e agora queremos continuar desenvolvendo sites', afirmou um dos alunos responsáveis.</p>"
+            },
+            2: {
+                titulo: "Prefeitura anuncia novos ônibus para linha escolar",
+                imagem: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>A prefeitura anunciou hoje a chegada de 10 novos ônibus para atender especificamente as linhas escolares da cidade. Os veículos possuem ar-condicionado, câmeras de segurança e espaços específicos para mochilas e material escolar.</p><p>'Queremos oferecer mais conforto e segurança para nossos estudantes', disse o prefeito em coletiva. 'Muitos alunos dependem do transporte público para chegar à escola e merecem um serviço de qualidade.'</p><p>Os novos ônibus começarão a circular na próxima segunda-feira, atendendo inicialmente os bairros mais distantes do centro. A prefeitura prometeu ainda aumentar a frequência dos coletivos nos horários de entrada e saída das escolas.</p>"
+            },
+            3: {
+                titulo: "Escola promove feira de ciências com projetos inovadores",
+                imagem: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>A tradicional feira de ciências da Escola Estadual Carlos Drummond contou com a participação de mais de 200 alunos este ano, que apresentaram projetos criativos e sustentáveis.</p><p>O grande destaque foi um sistema de irrigação automático feito com materiais reciclados, desenvolvido pelos alunos do 2º ano. 'Nosso projeto usa sensores de umidade e uma bomba de água controlada por Arduino para manter a terra sempre na umidade ideal', explicou uma das alunas responsáveis.</p><p>Outros projetos incluíram um filtro de água de baixo custo, uma casa sustentável em miniatura e um estudo sobre o efeito de diferentes adubos no crescimento de plantas. A feira foi aberta à comunidade e recebeu mais de 500 visitantes.</p>"
+            },
+            4: {
+                titulo: "Cantina escolar lança cardápio mais saudável",
+                imagem: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>A cantina da escola renovou completamente seu cardápio nesta semana, oferecendo agora opções mais nutritivas e saborosas para os alunos. Entre as novidades estão saladas frescas, sanduíches integrais, sucos naturais e frutas da estação.</p><p>'Percebemos que muitos alunos reclamavam da falta de opções saudáveis e resolvemos mudar', explicou a nutricionista responsável pelo novo cardápio. 'Queremos ajudar os estudantes a desenvolverem hábitos alimentares melhores, que influenciarão sua saúde por toda vida.'</p><p>Os preços foram mantidos acessíveis, e os alunos já aprovaram as mudanças. 'Antes só tinha salgadinho e refrigerante, agora tem comida de verdade', comemorou uma aluna do 1º ano.</p>"
+            },
+            5: {
+                titulo: "Como organizar melhor a rotina de estudos",
+                imagem: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>Com a volta às aulas, muitos estudantes enfrentam dificuldades para conciliar escola, tarefas domésticas e tempo livre. Especialistas dão dicas valiosas para organizar melhor a rotina:</p><ol><li>Estabeleça horários fixos para estudo e lazer</li><li>Crie um ambiente adequado, longe de distrações</li><li>Priorize as matérias com mais dificuldade</li><li>Faça pausas regulares para descansar a mente</li><li>Anote todas as tarefas e prazos em um planner</li></ol><p>'Ter uma rotina bem definida reduz o estresse e melhora o desempenho escolar', explica uma psicóloga especializada em educação. 'O importante é encontrar um equilíbrio que funcione para cada aluno.'</p>"
+            },
+            6: {
+                titulo: "Escola instala novo bicicletário com 50 vagas",
+                imagem: "https://images.unsplash.com/photo-1509822929063-6b6cfc9b42f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=400&q=80",
+                texto: "<p>Para incentivar o transporte sustentável e seguro, a escola construiu um novo bicicletário coberto com capacidade para 50 bikes. A estrutura conta ainda com pontos para reparos básicos e um bebedouro próximo.</p><p>'Muitos alunos já vinham de bicicleta e precisavam prender seus veículos em árvores ou postes', explicou o diretor. 'Agora terão um local seguro e protegido das chuvas para guardar suas bicicletas durante as aulas.'</p><p>A iniciativa faz parte de um projeto maior da escola para promover hábitos saudáveis e sustentáveis. 'Além de fazer bem à saúde, andar de bicicleta reduz o trânsito e a poluição', completou o diretor. A escola planeja ainda organizar oficinas de manutenção básica de bicicletas para os alunos interessados.</p>"
+            }
+        };
+        
+        leiaMaisBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const noticiaId = this.getAttribute('data-noticia');
+                const noticia = noticiasCompletas[noticiaId];
+                
+                modalTitulo.textContent = noticia.titulo;
+                modalImagem.src = noticia.imagem;
+                modalImagem.alt = noticia.titulo;
+                modalTexto.innerHTML = noticia.texto;
+                
+                modal.style.display = 'flex';
+            });
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
